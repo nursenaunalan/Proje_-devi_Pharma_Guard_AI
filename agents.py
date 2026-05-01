@@ -26,11 +26,16 @@ class PharmaAgentManager:
         # Clients
         try:
             genai.configure(api_key=self.gemini_key)
-            self.model_name = "gemini-1.5-flash" 
+            # Use gemini-2.0-flash-exp for v1beta compatibility
+            self.model_name = "gemini-2.0-flash-exp" 
             self.gemini_model = genai.GenerativeModel(self.model_name)
         except Exception as e:
-            st.error(f"Gemini Baglantisi Kurulamadi: {str(e)}")
-            st.stop()
+            try:
+                self.model_name = "gemini-1.5-flash"
+                self.gemini_model = genai.GenerativeModel(self.model_name)
+            except:
+                st.error(f"Gemini Baglantisi Kurulamadi: {str(e)}")
+                st.stop()
 
         try:
             self.groq_client = Groq(api_key=self.groq_key)

@@ -54,9 +54,14 @@ class RagEngine:
 
     def query(self, text, k=3):
         if self.vectorstore:
-            results = self.vectorstore.similarity_search(text, k=k)
-            return "\n".join([doc.page_content for doc in results])
-        return "No database initialized."
+            try:
+                results = self.vectorstore.similarity_search(text, k=k)
+                if not results:
+                    return "ILGILI PROSPEKTUS BULUNAMADI. Lutfen genel tibbi bilgilerle degil, prospektus eksikligi uyarisiyla cevap ver."
+                return "\n\n-- KAYNAK KESITI --\n" + "\n".join([doc.page_content for doc in results])
+            except Exception as e:
+                return f"Arama Hatasi: {str(e)}"
+        return "Veritabani yuklenemedi veya bos."
 
 class PDFReporter(FPDF):
     def header(self):

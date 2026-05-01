@@ -171,9 +171,21 @@ with col2:
             st.error("Lutfen bir gorsel yukleyin veya metin girin.")
 
     if st.session_state.analysis_results:
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.subheader("📄 Analiz Raporu")
-        st.markdown(st.session_state.analysis_results["report"])
+        report_text = st.session_state.analysis_results["report"]
+        
+        # Visual Alarm for Mismatch
+        if "UYUŞMAZLIĞI" in report_text:
+            st.error("🚨 KRİTİK VERİ UYUŞMAZLIĞI TESPİT EDİLDİ!")
+            st.markdown(f"""
+                <div style="border: 4px solid red; padding: 20px; border-radius: 15px; background: rgba(255,0,0,0.1);">
+                    <h3 style="color: red; margin-top: 0;">!!! DİKKAT !!!</h3>
+                    {report_text}
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+            st.subheader("📄 Analiz Raporu")
+            st.markdown(report_text)
         
         # Medical Disclaimer
         st.warning("⚠️ **ÖNEMLİ UYARI:** Bu rapor bilgilendirme amaçlıdır. İlacı kullanmadan önce mutlaka doktorunuza danışınız. Beklenmeyen bir etki görüldüğünde en yakın sağlık kuruluşuna başvurunuz.")

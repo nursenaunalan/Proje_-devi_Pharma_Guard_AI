@@ -111,7 +111,22 @@ with st.sidebar:
 
 # Main UI
 st.title("💊 Yapay Zeka Destekli Akilli Ilac Denetcisi")
-st.markdown("Gorsel veya metin girisi yaparak ilac analizi baslatin.")
+st.markdown("""
+    <p style='font-size: 1.2em; color: #a0a0a0;'>
+    Görüntü işleme ve RAG teknolojisi ile prospektüs onaylı ilaç analizi.
+    </p>
+""", unsafe_allow_html=True)
+
+# User Guide
+with st.expander("📘 Kullanim Kilavuzu"):
+    st.markdown("""
+    1. **Veri Hazırlığı:** `data/corpus` klasörüne ilaçların PDF prospektüslerini yükleyin.
+    2. **Giriş Yöntemi:** İlaç kutusunun fotoğrafını yükleyin veya ismini manuel girin.
+    3. **Analiz:** 'Analizi Başlat' butonuna basın.
+    4. **Rapor:** Sonuçları inceleyin ve profesyonel PDF raporunu indirin.
+    ---
+    *Not: Bu sistem bir yardımcıdır, tıbbi kararlar için her zaman bir doktora danışın.*
+    """)
 
 col1, col2 = st.columns([1, 1])
 

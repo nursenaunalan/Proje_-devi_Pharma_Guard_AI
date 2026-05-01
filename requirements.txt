@@ -5,11 +5,13 @@ langchain-community
 langchain-huggingface
 langchain-text-splitters
 chromadb
-google-generativeai==0.7.2
+google-generativeai>=0.8.3
 groq
 fpdf2
 python-dotenv
 pillow
 sentence-transformers
+torch
+transformers
 pypdf
 pysqlite3-binary

@@ -26,9 +26,8 @@ class PharmaAgentManager:
         # Clients
         try:
             genai.configure(api_key=self.gemini_key)
-            # Default to 1.5 Flash for better stability/quota on free tier, 
-            # 2.0 Flash as premium option if needed.
-            self.model_name = "gemini-1.5-flash" 
+            # Use 'latest' suffix for better compatibility with different API versions
+            self.model_name = "gemini-1.5-flash-latest" 
             self.gemini_model = genai.GenerativeModel(self.model_name)
         except Exception as e:
             st.error(f"Gemini Baglantisi Kurulamadi: {str(e)}")

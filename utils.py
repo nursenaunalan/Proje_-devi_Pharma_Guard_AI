@@ -86,41 +86,36 @@ class PDFReporter(FPDF):
     def generate_report(self, data, filename="report.pdf"):
         self.add_page()
         
-        # Title
-        self.set_font("Helvetica", "B", 14)
-        self.cell(0, 10, self.clean_text("1. Ilac Kimlik Ozeti"), ln=True)
-        self.set_font("Helvetica", size=12)
-        self.multi_cell(0, 10, self.clean_text(data.get("summary", "N/A")))
-        self.ln(5)
-        
-        # Indications
-        self.set_font("Helvetica", "B", 14)
-        self.cell(0, 10, self.clean_text("2. Kullanim Amaci (Endikasyonlar)"), ln=True)
-        self.set_font("Helvetica", size=12)
-        self.multi_cell(0, 10, self.clean_text(data.get("indications", "N/A")))
-        self.ln(5)
-        
-        # Warnings
-        self.set_font("Helvetica", "B", 14)
-        self.set_text_color(255, 0, 0)
-        self.cell(0, 10, self.clean_text("3. Kritik Uyarilar ve Yan Etkiler"), ln=True)
-        self.set_text_color(0, 0, 0)
-        self.set_font("Helvetica", size=12)
-        self.multi_cell(0, 10, self.clean_text(data.get("warnings", "N/A")))
-        self.ln(5)
-        
-        # Details
-        self.set_font("Helvetica", "B", 14)
-        self.cell(0, 10, self.clean_text("4. Etken Madde ve Uretici Detaylari"), ln=True)
-        self.set_font("Helvetica", size=12)
-        self.multi_cell(0, 10, self.clean_text(data.get("details", "N/A")))
-        self.ln(5)
-        
-        # RAG Sources
-        self.set_font("Helvetica", "B", 14)
-        self.cell(0, 10, self.clean_text("5. RAG / Kaynakca"), ln=True)
-        self.set_font("Helvetica", size=12)
-        self.multi_cell(0, 10, self.clean_text(data.get("sources", "N/A")))
+        # Header Styling
+        self.set_text_color(58, 123, 213) # Blue accent
+        self.set_font("Helvetica", "B", 16)
+        self.cell(0, 10, self.clean_text("PHARMA-GUARD AI ANALIZ RAPORU"), ln=True, align="C")
+        self.set_draw_color(58, 123, 213)
+        self.line(10, 25, 200, 25)
+        self.ln(10)
+
+        sections = [
+            ("1. Ilac Kimlik Ozeti", "summary", (0, 0, 0)),
+            ("2. Kullanim Amaci (Endikasyonlar)", "indications", (0, 0, 0)),
+            ("3. Kritik Uyarilar ve Yan Etkiler", "warnings", (255, 0, 0)), # Red for warnings
+            ("4. Etken Madde ve Uretici Detaylari", "details", (0, 0, 0)),
+            ("5. RAG / Kaynakca", "sources", (100, 100, 100)) # Grey for sources
+        ]
+
+        for title, key, color in sections:
+            self.set_text_color(*color)
+            self.set_font("Helvetica", "B", 12)
+            self.cell(0, 10, self.clean_text(title), ln=True)
+            
+            self.set_text_color(0, 0, 0)
+            self.set_font("Helvetica", size=10)
+            content = data.get(key, "Detayli bilgi bulunamadi.")
+            self.multi_cell(0, 7, self.clean_text(content))
+            self.ln(5)
+            # Add a subtle line between sections
+            self.set_draw_color(230, 230, 230)
+            self.line(10, self.get_y(), 200, self.get_y())
+            self.ln(2)
         
         self.output(filename)
 

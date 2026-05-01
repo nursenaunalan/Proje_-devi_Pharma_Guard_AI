@@ -162,16 +162,33 @@ with col2:
         
         # PDF Generation
         if st.button("PDF Raporu Indir"):
-            reporter = PDFReporter()
-            # Simple parsing for demo purposes - in a real app, 
-            # we'd parse the sections properly from the Gemini output
+            def extract_section(text, section_num):
+                import re
+                patterns = [
+                    r"1\.\s*(.*?)(?=\n2\.)",
+                    r"2\.\s*(.*?)(?=\n3\.)",
+                    r"3\.\s*(.*?)(?=\n4\.)",
+                    r"4\.\s*(.*?)(?=\n5\.)",
+                    r"5\.\s*(.*)$"
+                ]
+                try:
+                    match = re.search(patterns[section_num-1], text, re.DOTALL)
+                    if match:
+                        return match.group(1).strip()
+                except:
+                    pass
+                return "Detaylar ana raporda mevcuttur."
+
+            report_text = st.session_state.analysis_results["report"]
             report_data = {
-                "summary": st.session_state.analysis_results["report"][:500] + "...",
-                "indications": "Detaylar raporda mevcuttur.",
-                "warnings": "DIKKAT: Tibbi tavsiye degildir.",
-                "details": st.session_state.analysis_results["raw_info"],
-                "sources": "Local PDF Corpus"
+                "summary": extract_section(report_text, 1),
+                "indications": extract_section(report_text, 2),
+                "warnings": extract_section(report_text, 3),
+                "details": extract_section(report_text, 4),
+                "sources": extract_section(report_text, 5)
             }
+            
+            reporter = PDFReporter()
             reporter.generate_report(report_data, "pharma_report.pdf")
             
             with open("pharma_report.pdf", "rb") as f:

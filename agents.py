@@ -64,10 +64,17 @@ class PharmaAgentManager:
         """Uses Gemini 2.0 Flash for vision analysis."""
         try:
             prompt = """
-            Analyze this drug box image as the [Vision-Scanner] agent. 
-            Extract: Brand Name (Ticari Ad), Active Ingredient (Etken Madde), Dosage (mg/ml), Form (Tablet/Syrup), and Barcode. 
-            If the text is unreadable, respond with 'UNREADABLE'.
-            Output MUST be in valid JSON format.
+            ### ROLE: VISION-SCANNER AGENT ###
+            Görevin; ilaç kutusunun üzerindeki metinleri yüksek doğrulukla okumaktır (OCR).
+            Aşağıdaki bilgileri JSON formatında çıkar:
+            - Brand Name (Ticari Ad)
+            - Active Ingredient (Etken Madde - Genelde küçük yazılır)
+            - Dosage (Dozaj - örn: 500 mg, 15 ml)
+            - Form (Tablet, Şurup, Ampul vb.)
+            - Barcode (Varsa 13 haneli barkod numarası)
+            
+            KURAL: Yazı okunmuyorsa asla tahmin etme, 'UNREADABLE' değerini ata.
+            Lütfen sadece JSON çıktısı ver.
             """
             response = self.gemini_model.generate_content([
                 prompt, 
@@ -120,18 +127,32 @@ class PharmaAgentManager:
         final_prompt = f"""
         {self.master_prompt}
         
-        GIRIS VERISI (Extracted):
+        GIRIS VERISI (Analiz edilecek ilac bilgileri):
         {extracted_info}
         
-        RAG KAYNAK VERISI:
+        RAG / PROSPEKTUS KAYNAK VERISI (Dogrulanmis tibbi bilgiler):
         {rag_context}
         
-        Lutfen asagidaki hiyerarside raporu olustur:
+        ### RAPOR TALIMATI:
+        Yukardaki verileri kullanarak profesyonel bir tibbi analiz raporu hazirla. 
+        Her bölüm için mutlaka 1-10 arasi bir GUVEN PUANI (Confidence Score) belirt. 
+        Eger prospektüs verisi ile giris verisi (mg, dozaj vb.) uyusmuyorsa 'VERI UYUSMAZLIGI' uyarisi ver.
+        
+        ### CIKTI HIYERARSISI (BU FORMATI ASLA BOZMA):
         1. Ilac Kimlik Ozeti
+        [Icerik ve Guven Puani]
+        
         2. Kullanim Amaci (Endikasyonlar)
+        [Icerik ve Guven Puani]
+        
         3. Kritik Uyarilar ve Yan Etkiler
+        [Icerik ve Guven Puani]
+        
         4. Etken Madde ve Uretici Detaylari
+        [Icerik ve Guven Puani]
+        
         5. RAG / Kaynakca
+        [Hangi belgeden, hangi sayfa/linkten alindi?]
         """
         
         try:

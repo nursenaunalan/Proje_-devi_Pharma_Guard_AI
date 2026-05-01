@@ -4,6 +4,7 @@ import google.generativeai as genai
 from groq import Groq
 import json
 from utils import RagEngine
+import time
 
 load_dotenv()
 
@@ -25,7 +26,10 @@ class PharmaAgentManager:
         # Clients
         try:
             genai.configure(api_key=self.gemini_key)
-            self.gemini_model = genai.GenerativeModel("gemini-2.0-flash")
+            # Default to 1.5 Flash for better stability/quota on free tier, 
+            # 2.0 Flash as premium option if needed.
+            self.model_name = "gemini-1.5-flash" 
+            self.gemini_model = genai.GenerativeModel(self.model_name)
         except Exception as e:
             st.error(f"Gemini Baglantisi Kurulamadi: {str(e)}")
             st.stop()
@@ -131,10 +135,20 @@ class PharmaAgentManager:
         5. RAG / Kaynakca
         """
         
-        response = self.gemini_model.generate_content(final_prompt)
+        try:
+            response = self.gemini_model.generate_content(final_prompt)
+            report_text = response.text
+        except Exception as e:
+            if "429" in str(e) or "ResourceExhausted" in str(e):
+                logs.append("⚠️ Kota sinirina takildi, 5 saniye bekleniyor...")
+                time.sleep(5)
+                response = self.gemini_model.generate_content(final_prompt)
+                report_text = response.text
+            else:
+                report_text = f"Sentez Hatasi: {str(e)}"
         
         return {
-            "report": response.text,
+            "report": report_text,
             "logs": logs,
             "raw_info": extracted_info
         }

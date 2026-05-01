@@ -26,8 +26,7 @@ class PharmaAgentManager:
         # Clients
         try:
             genai.configure(api_key=self.gemini_key)
-            # Use 'latest' suffix for better compatibility with different API versions
-            self.model_name = "gemini-1.5-flash-latest" 
+            self.model_name = "gemini-1.5-flash" 
             self.gemini_model = genai.GenerativeModel(self.model_name)
         except Exception as e:
             st.error(f"Gemini Baglantisi Kurulamadi: {str(e)}")

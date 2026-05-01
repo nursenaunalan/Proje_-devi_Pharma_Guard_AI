@@ -142,7 +142,7 @@ class PharmaAgentManager:
         Her bölüm için mutlaka 1-10 arasi bir GUVEN PUANI (Confidence Score) belirt. 
         Eger prospektüs verisi ile giris verisi (mg, dozaj vb.) uyusmuyorsa 'VERI UYUSMAZLIGI' uyarisi ver.
         
-        ### CIKTI HIYERARSISI (BU FORMATI ASLA BOZMA):
+        ### CIKTI HIYERARSISI (BU FORMATI KESINLIKLE KORU):
         1. Ilac Kimlik Ozeti
         [Icerik ve Guven Puani]
         
@@ -156,7 +156,7 @@ class PharmaAgentManager:
         [Icerik ve Guven Puani]
         
         5. RAG / Kaynakca
-        [Hangi belgeden, hangi sayfa/linkten alindi?]
+        [Icerik]
         
         ---
         **ONEMLI UYARI:** Bu rapor bilgilendirme amaclidir. Ilaci kullanmadan once mutlaka doktorunuza danisiniz. Beklenmeyen bir etki goruldugunde en yakin saglik kurulusuna basvurunuz.

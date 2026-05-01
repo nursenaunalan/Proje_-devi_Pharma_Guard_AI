@@ -194,17 +194,19 @@ with col2:
         if st.button("PDF Raporu Indir"):
             def extract_section(text, section_num):
                 import re
+                # More flexible patterns to catch different Markdown styles (headers, bold numbers, etc.)
                 patterns = [
-                    r"1\.\s*(.*?)(?=\n2\.)",
-                    r"2\.\s*(.*?)(?=\n3\.)",
-                    r"3\.\s*(.*?)(?=\n4\.)",
-                    r"4\.\s*(.*?)(?=\n5\.)",
-                    r"5\.\s*(.*)$"
+                    r"(?:1\.|\#\#\#\s*1\.|(?:\*\*|__)1\..*?(\*\*|__))\s*(.*?)(?=\n(?:2\.|\#\#\#\s*2\.|(?:\*\*|__)2\.))",
+                    r"(?:2\.|\#\#\#\s*2\.|(?:\*\*|__)2\..*?(\*\*|__))\s*(.*?)(?=\n(?:3\.|\#\#\#\s*3\.|(?:\*\*|__)3\.))",
+                    r"(?:3\.|\#\#\#\s*3\.|(?:\*\*|__)3\..*?(\*\*|__))\s*(.*?)(?=\n(?:4\.|\#\#\#\s*4\.|(?:\*\*|__)4\.))",
+                    r"(?:4\.|\#\#\#\s*4\.|(?:\*\*|__)4\..*?(\*\*|__))\s*(.*?)(?=\n(?:5\.|\#\#\#\s*5\.|(?:\*\*|__)5\.))",
+                    r"(?:5\.|\#\#\#\s*5\.|(?:\*\*|__)5\..*?(\*\*|__))\s*(.*)$"
                 ]
                 try:
-                    match = re.search(patterns[section_num-1], text, re.DOTALL)
+                    match = re.search(patterns[section_num-1], text, re.DOTALL | re.IGNORECASE)
                     if match:
-                        return match.group(1).strip()
+                        # Return the last group which is the content
+                        return match.groups()[-1].strip()
                 except:
                     pass
                 return "Detaylar ana raporda mevcuttur."

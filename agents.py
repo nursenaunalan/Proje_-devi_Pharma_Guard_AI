@@ -164,32 +164,19 @@ class PharmaAgentManager:
         """
         
         try:
-            response = self.gemini_model.generate_content(final_prompt)
-            report_text = response.text
-        except google_exceptions.NotFound:
-            logs.append("⚠️ Model bulunamadi (NotFound), yedek modellere geciliyor...")
-            fallback_models = ["gemini-1.5-pro", "gemini-pro", "models/gemini-1.5-flash"]
-            success = False
-            for f_model in fallback_models:
-                try:
-                    fallback_client = genai.GenerativeModel(f_model)
-                    response = fallback_client.generate_content(final_prompt)
-                    report_text = response.text
-                    logs.append(f"✅ Yedek model ({f_model}) basariyla calisti.")
-                    success = True
-                    break
-                except:
-                    continue
-            if not success:
-                report_text = "Sentez Hatasi: Hicbir yedek model calismadi. API anahtarinizi veya yetkilerinizi kontrol edin."
+            # SWITCHED TO GROQ (Llama-3-70B) for maximum reliability and to bypass Gemini API 404 errors
+            chat_completion = self.groq_client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": "Sen Pharma-Guard sisteminin bashekimisin. Turkce, kesin, dogru ve kisa tipbi analiz raporlari uretirsin."},
+                    {"role": "user", "content": final_prompt}
+                ],
+                model="llama3-70b-8192",
+                temperature=0.2, # Low temperature for more factual, strict output
+                max_tokens=2048
+            )
+            report_text = chat_completion.choices[0].message.content
         except Exception as e:
-            if "429" in str(e) or "ResourceExhausted" in str(e):
-                logs.append("⚠️ Kota sinirina takildi, 5 saniye bekleniyor...")
-                time.sleep(5)
-                response = self.gemini_model.generate_content(final_prompt)
-                report_text = response.text
-            else:
-                report_text = f"Sentez Hatasi: {str(e)}"
+            report_text = f"Sentez Hatasi (Groq Llama-3): {str(e)}"
         
         return {
             "report": report_text,

@@ -152,6 +152,9 @@ class PharmaAgentManager:
         
         5. RAG / Kaynakca
         [Hangi belgeden, hangi sayfa/linkten alindi?]
+        
+        ---
+        **ONEMLI UYARI:** Bu rapor bilgilendirme amaclidir. Ilaci kullanmadan once mutlaka doktorunuza danisiniz. Beklenmeyen bir etki goruldugunde en yakin saglik kurulusuna basvurunuz.
         """
         
         try:

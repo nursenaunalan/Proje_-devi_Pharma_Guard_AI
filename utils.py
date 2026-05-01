@@ -117,6 +117,14 @@ class PDFReporter(FPDF):
             self.line(10, self.get_y(), 200, self.get_y())
             self.ln(2)
         
+        # Medical Disclaimer at the end
+        self.ln(5)
+        self.set_fill_color(255, 243, 205) # Light yellow background
+        self.set_text_color(133, 100, 4) # Dark brownish yellow
+        self.set_font("Helvetica", "B", 9)
+        disclaimer = data.get("disclaimer", "")
+        self.multi_cell(0, 7, self.clean_text(disclaimer), border=1, fill=True)
+        
         self.output(filename)
 
 def encode_image(image_path):

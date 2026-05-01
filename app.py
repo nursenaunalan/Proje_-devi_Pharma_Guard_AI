@@ -175,6 +175,9 @@ with col2:
         st.subheader("📄 Analiz Raporu")
         st.markdown(st.session_state.analysis_results["report"])
         
+        # Medical Disclaimer
+        st.warning("⚠️ **ÖNEMLİ UYARI:** Bu rapor bilgilendirme amaçlıdır. İlacı kullanmadan önce mutlaka doktorunuza danışınız. Beklenmeyen bir etki görüldüğünde en yakın sağlık kuruluşuna başvurunuz.")
+        
         # PDF Generation
         if st.button("PDF Raporu Indir"):
             def extract_section(text, section_num):
@@ -200,7 +203,8 @@ with col2:
                 "indications": extract_section(report_text, 2),
                 "warnings": extract_section(report_text, 3),
                 "details": extract_section(report_text, 4),
-                "sources": extract_section(report_text, 5)
+                "sources": extract_section(report_text, 5),
+                "disclaimer": "ONEMLI UYARI: Bu rapor bilgilendirme amaclidir. Ilaci kullanmadan once mutlaka doktorunuza danisiniz. Beklenmeyen bir etki goruldugunde en yakin saglik kurulusuna basvurunuz."
             }
             
             reporter = PDFReporter()

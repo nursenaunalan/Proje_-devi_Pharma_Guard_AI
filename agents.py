@@ -5,6 +5,7 @@ from groq import Groq
 import json
 from utils import RagEngine
 import time
+from google.api_core import exceptions as google_exceptions
 
 load_dotenv()
 
@@ -78,12 +79,12 @@ class PharmaAgentManager:
             try:
                 response = self.gemini_model.generate_content([prompt, {"mime_type": mime_type, "data": image_bytes}])
                 return response.text
+            except google_exceptions.NotFound:
+                # Fallback to legacy vision model
+                fallback_model = genai.GenerativeModel("gemini-pro-vision")
+                res = fallback_model.generate_content([prompt, {"mime_type": mime_type, "data": image_bytes}])
+                return res.text
             except Exception as e:
-                if "404" in str(e):
-                    # Fallback to legacy vision model
-                    fallback_model = genai.GenerativeModel("gemini-pro-vision")
-                    res = fallback_model.generate_content([prompt, {"mime_type": mime_type, "data": image_bytes}])
-                    return res.text
                 return f"Vision Error: {str(e)}"
         except Exception as e:
             return f"Vision Error: {str(e)}"
@@ -165,16 +166,27 @@ class PharmaAgentManager:
         try:
             response = self.gemini_model.generate_content(final_prompt)
             report_text = response.text
+        except google_exceptions.NotFound:
+            logs.append("⚠️ Model bulunamadi (NotFound), yedek modellere geciliyor...")
+            fallback_models = ["gemini-1.5-pro", "gemini-pro", "models/gemini-1.5-flash"]
+            success = False
+            for f_model in fallback_models:
+                try:
+                    fallback_client = genai.GenerativeModel(f_model)
+                    response = fallback_client.generate_content(final_prompt)
+                    report_text = response.text
+                    logs.append(f"✅ Yedek model ({f_model}) basariyla calisti.")
+                    success = True
+                    break
+                except:
+                    continue
+            if not success:
+                report_text = "Sentez Hatasi: Hicbir yedek model calismadi. API anahtarinizi veya yetkilerinizi kontrol edin."
         except Exception as e:
             if "429" in str(e) or "ResourceExhausted" in str(e):
                 logs.append("⚠️ Kota sinirina takildi, 5 saniye bekleniyor...")
                 time.sleep(5)
                 response = self.gemini_model.generate_content(final_prompt)
-                report_text = response.text
-            elif "404" in str(e):
-                logs.append("⚠️ Model 404 hatasi alindi, 'gemini-pro' yedek modeline geciliyor...")
-                fallback_model = genai.GenerativeModel("gemini-pro")
-                response = fallback_model.generate_content(final_prompt)
                 report_text = response.text
             else:
                 report_text = f"Sentez Hatasi: {str(e)}"

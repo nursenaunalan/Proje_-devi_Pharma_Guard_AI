@@ -1,0 +1,13 @@
+streamlit
+langchain
+langchain-community
+langchain-huggingface
+chromadb
+google-generativeai
+groq
+fpdf2
+python-dotenv
+pillow
+sentence-transformers
+pypdf
+pysqlite3-binary

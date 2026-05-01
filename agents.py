@@ -97,7 +97,7 @@ class PharmaAgentManager:
                     {"role": "system", "content": "You are the Corporate-Analyst and Secretary. Convert raw drug data into a clean JSON and summarize findings quickly."},
                     {"role": "user", "content": f"Data: {raw_data}"}
                 ],
-                model="llama3-70b-8192",
+                model="llama-3.1-70b-versatile",
             )
             return chat_completion.choices[0].message.content
         except Exception as e:
@@ -170,7 +170,7 @@ class PharmaAgentManager:
                     {"role": "system", "content": "Sen Pharma-Guard sisteminin bashekimisin. Turkce, kesin, dogru ve kisa tipbi analiz raporlari uretirsin."},
                     {"role": "user", "content": final_prompt}
                 ],
-                model="llama3-70b-8192",
+                model="llama-3.1-70b-versatile",
                 temperature=0.2, # Low temperature for more factual, strict output
                 max_tokens=2048
             )

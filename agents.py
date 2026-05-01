@@ -164,16 +164,28 @@ class PharmaAgentManager:
         """
         
         try:
-            # SWITCHED TO GROQ (Llama-3-70B) for maximum reliability and to bypass Gemini API 404 errors
-            chat_completion = self.groq_client.chat.completions.create(
-                messages=[
-                    {"role": "system", "content": "Sen Pharma-Guard sisteminin bashekimisin. Turkce, kesin, dogru ve kisa tipbi analiz raporlari uretirsin."},
-                    {"role": "user", "content": final_prompt}
-                ],
-                model="llama-3.1-70b-versatile",
-                temperature=0.2, # Low temperature for more factual, strict output
-                max_tokens=2048
-            )
+            # Groq model fallback list to ensure maximum reliability
+            messages = [
+                {"role": "system", "content": "Sen Pharma-Guard sisteminin bashekimisin. Turkce, kesin, dogru ve kisa tipbi analiz raporlari uretirsin."},
+                {"role": "user", "content": final_prompt}
+            ]
+            
+            try:
+                chat_completion = self.groq_client.chat.completions.create(
+                    messages=messages,
+                    model="llama-3.3-70b-versatile",
+                    temperature=0.2,
+                    max_tokens=2048
+                )
+            except:
+                # Fallback to faster/lighter model if 70B fails (rate limit, decommission, etc.)
+                chat_completion = self.groq_client.chat.completions.create(
+                    messages=messages,
+                    model="llama-3.1-8b-instant",
+                    temperature=0.2,
+                    max_tokens=2048
+                )
+                
             report_text = chat_completion.choices[0].message.content
         except Exception as e:
             report_text = f"Sentez Hatasi (Groq Llama-3): {str(e)}"

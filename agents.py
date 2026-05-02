@@ -118,13 +118,25 @@ class PharmaAgentManager:
         if is_image:
             logs.append("Vision-Scanner: Gorsel analiz ediliyor...")
             extracted_info = self.vision_scan(input_data, mime_type=mime_type)
+            
+            # Parse drug name for RAG
+            try:
+                # Clean JSON if wrapped in markdown
+                clean_json = extracted_info.replace("```json", "").replace("```", "").strip()
+                drug_data = json.loads(clean_json)
+                drug_name_for_rag = f"{drug_data.get('Brand Name', '')} {drug_data.get('Active Ingredient', '')}".strip()
+                if not drug_name_for_rag or drug_name_for_rag == "UNREADABLE":
+                    drug_name_for_rag = extracted_info
+            except:
+                drug_name_for_rag = extracted_info
         else:
             logs.append("Text-Input: Metin isleniyor...")
             extracted_info = input_data
+            drug_name_for_rag = input_data
 
         # 2. RAG Retrieval
-        logs.append("RAG-Specialist: Yerel veritabani taraniyor...")
-        rag_context = self.analyze_with_rag(extracted_info)
+        logs.append(f"RAG-Specialist: '{drug_name_for_rag}' icin veritabani taraniyor...")
+        rag_context = self.analyze_with_rag(drug_name_for_rag)
 
         # 3. Final Synthesis (Master Orchestrator)
         logs.append("Master-Orchestrator: Rapor sentezleniyor...")

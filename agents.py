@@ -53,11 +53,11 @@ class PharmaAgentManager:
         Görevin; ilaç analizini SIFIR HATA ve MAKSİMUM GÜVENİRLİK ile yapmaktır.
 
         ### KRİTİK OPERASYONEL KURALLAR:
-        1. ÖZLÜLÜK (Conciseness): Raporu gereksiz tıbbi literatürle doldurma. Maddeler halinde, öz ve net bilgiler ver.
-        2. VERİ UYUŞMAZLIĞI (Data Mismatch): Görseldeki mg/dozaj bilgisi ile prospektüsteki bilgi arasında uyumsuzluk varsa, raporun en başına kocaman '!!! VERİ UYUŞMAZLIĞI TESPİT EDİLDİ !!!' uyarısını ekle. ANCAK analizi KESİNLİKLE durdurma, 1'den 5'e kadar olan tüm rapor maddelerini eksiksiz şekilde doldurmaya devam et.
-        3. GÜVEN PUANI: Her bilgi için (1-10) arası puan ver. 7'nin altındaki bilgiler için 'Onaylanmadı' notu düş.
-        4. HALÜSİNASYON ENGELİ: Prospektüste yazmayan hiçbir bilgiyi (internet yorumu, genel bilgi) teknik bilgi olarak sunma.
-        5. DİL: Tamamen Türkçe, tıbbi terimler parantez içinde sadeleştirilmiş.
+        1. ÖZLÜLÜK: Raporu gereksiz tıbbi literatürle doldurma. Maddeler halinde, öz ve net bilgiler ver.
+        2. KESİN FORMAT: Rapora asla giriş cümlesi (örn: 'İşte rapor...', '### RAPOR SONUCU ###') yazma. DOĞRUDAN '1. Ilac Kimlik Ozeti' başlığı ile başla.
+        3. VERİ UYUŞMAZLIĞI: Görseldeki mg/dozaj ile prospektüsteki veri uyuşmuyorsa, bu uyumsuzluğu '3. Kritik Uyarilar ve Yan Etkiler' bölümünün en başına kocaman '!!! VERİ UYUŞMAZLIĞI TESPİT EDİLDİ !!!' yazarak belirt. Raporun yapısını bozma.
+        4. GÜVEN PUANI: Her bilgi için (1-10) arası puan ver.
+        5. HALÜSİNASYON ENGELİ: Prospektüste yazmayan hiçbir bilgiyi ekleme.
         """
 
     def vision_scan(self, image_bytes, mime_type="image/jpeg"):
@@ -143,7 +143,7 @@ class PharmaAgentManager:
         Her bölüm için mutlaka 1-10 arasi bir GUVEN PUANI (Confidence Score) belirt. 
         Eger prospektüs verisi ile giris verisi (mg, dozaj vb.) uyusmuyorsa 'VERI UYUSMAZLIGI' uyarisi ver.
         
-        ### CIKTI HIYERARSISI (BU FORMATI KESINLIKLE KORU):
+        ### CIKTI HIYERARSISI (BU FORMATI KESINLIKLE KORU, ONCESINDE VEYA SONRASINDA HICBIR METIN YAZMA):
         1. Ilac Kimlik Ozeti
         [Icerik ve Guven Puani]
         
@@ -151,6 +151,7 @@ class PharmaAgentManager:
         [Icerik ve Guven Puani]
         
         3. Kritik Uyarilar ve Yan Etkiler
+        [Varsa Veri Uyusmazligi Uyarisi]
         [Icerik ve Guven Puani]
         
         4. Etken Madde ve Uretici Detaylari

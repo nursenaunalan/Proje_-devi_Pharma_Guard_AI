@@ -60,7 +60,9 @@ class PharmaAgentManager:
         5. HALÜSİNASYON ENGELİ: Prospektüste yazmayan hiçbir bilgiyi ekleme.
         """
 
-    def vision_scan(self, image_bytes, mime_type="image/jpeg"):
+        from PIL import Image
+        import io
+        
         prompt = """
         ### ROLE: VISION-SCANNER AGENT ###
         Görevin; ilaç kutusunun üzerindeki metinleri yüksek doğrulukla okumaktır (OCR).
@@ -75,16 +77,24 @@ class PharmaAgentManager:
         Lütfen sadece JSON çıktısı ver.
         """
         
-        vision_models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.5-flash-8b", "models/gemini-1.5-flash"]
+        try:
+            # Prepare image for Gemini
+            img = Image.open(io.BytesIO(image_bytes))
+        except Exception as e:
+            return f"Vision Error: Gorsel dosyasi acilamadi: {str(e)}"
+            
+        vision_models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.5-flash-8b"]
         last_error = ""
         
         for v_model in vision_models:
             try:
                 client = genai.GenerativeModel(v_model)
-                response = client.generate_content([prompt, {"mime_type": mime_type, "data": image_bytes}])
-                return response.text
+                response = client.generate_content([prompt, img])
+                if response and response.text:
+                    return response.text
             except Exception as e:
                 last_error = str(e)
+                time.sleep(1) # Small delay between retries
                 continue
                 
         return f"Vision Error: Gorsel isleme motorlari yanit vermedi. Hata: {last_error}"

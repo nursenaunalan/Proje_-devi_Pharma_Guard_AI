@@ -60,6 +60,7 @@ class PharmaAgentManager:
         5. HALÜSİNASYON ENGELİ: Prospektüste yazmayan hiçbir bilgiyi ekleme.
         """
 
+    def vision_scan(self, image_bytes, mime_type="image/jpeg"):
         from PIL import Image
         import io
         

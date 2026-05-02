@@ -61,33 +61,33 @@ class PharmaAgentManager:
         """
 
     def vision_scan(self, image_bytes, mime_type="image/jpeg"):
-        """Uses Gemini 2.0 Flash for vision analysis."""
-        try:
-            prompt = """
-            ### ROLE: VISION-SCANNER AGENT ###
-            Görevin; ilaç kutusunun üzerindeki metinleri yüksek doğrulukla okumaktır (OCR).
-            Aşağıdaki bilgileri JSON formatında çıkar:
-            - Brand Name (Ticari Ad)
-            - Active Ingredient (Etken Madde - Genelde küçük yazılır)
-            - Dosage (Dozaj - örn: 500 mg, 15 ml)
-            - Form (Tablet, Şurup, Ampul vb.)
-            - Barcode (Varsa 13 haneli barkod numarası)
-            
-            KURAL: Yazı okunmuyorsa asla tahmin etme, 'UNREADABLE' değerini ata.
-            Lütfen sadece JSON çıktısı ver.
-            """
+        prompt = """
+        ### ROLE: VISION-SCANNER AGENT ###
+        Görevin; ilaç kutusunun üzerindeki metinleri yüksek doğrulukla okumaktır (OCR).
+        Aşağıdaki bilgileri JSON formatında çıkar:
+        - Brand Name (Ticari Ad)
+        - Active Ingredient (Etken Madde - Genelde küçük yazılır)
+        - Dosage (Dozaj - örn: 500 mg, 15 ml)
+        - Form (Tablet, Şurup, Ampul vb.)
+        - Barcode (Varsa 13 haneli barkod numarası)
+        
+        KURAL: Yazı okunmuyorsa asla tahmin etme, 'UNREADABLE' değerini ata.
+        Lütfen sadece JSON çıktısı ver.
+        """
+        
+        vision_models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.5-flash-8b", "models/gemini-1.5-flash"]
+        last_error = ""
+        
+        for v_model in vision_models:
             try:
-                response = self.gemini_model.generate_content([prompt, {"mime_type": mime_type, "data": image_bytes}])
+                client = genai.GenerativeModel(v_model)
+                response = client.generate_content([prompt, {"mime_type": mime_type, "data": image_bytes}])
                 return response.text
-            except google_exceptions.NotFound:
-                # Fallback to legacy vision model
-                fallback_model = genai.GenerativeModel("gemini-pro-vision")
-                res = fallback_model.generate_content([prompt, {"mime_type": mime_type, "data": image_bytes}])
-                return res.text
             except Exception as e:
-                return f"Vision Error: {str(e)}"
-        except Exception as e:
-            return f"Vision Error: {str(e)}"
+                last_error = str(e)
+                continue
+                
+        return f"Vision Error: Gorsel isleme motorlari yanit vermedi. Hata: {last_error}"
 
     def fast_summarize(self, raw_data):
         """Uses Groq (Llama-3-70B) for fast JSON structuring and summarization."""

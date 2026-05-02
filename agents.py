@@ -54,7 +54,7 @@ class PharmaAgentManager:
 
         ### KRİTİK OPERASYONEL KURALLAR:
         1. ÖZLÜLÜK (Conciseness): Raporu gereksiz tıbbi literatürle doldurma. Maddeler halinde, öz ve net bilgiler ver.
-        2. VERİ UYUŞMAZLIĞI (Data Mismatch): Görseldeki mg/dozaj bilgisi ile prospektüsteki bilgi arasında 0.1 mg bile fark varsa, raporun en başına kocaman '!!! VERİ UYUŞMAZLIĞI TESPİT EDİLDİ !!!' uyarısını ekle ve analizi durdur.
+        2. VERİ UYUŞMAZLIĞI (Data Mismatch): Görseldeki mg/dozaj bilgisi ile prospektüsteki bilgi arasında uyumsuzluk varsa, raporun en başına kocaman '!!! VERİ UYUŞMAZLIĞI TESPİT EDİLDİ !!!' uyarısını ekle. ANCAK analizi KESİNLİKLE durdurma, 1'den 5'e kadar olan tüm rapor maddelerini eksiksiz şekilde doldurmaya devam et.
         3. GÜVEN PUANI: Her bilgi için (1-10) arası puan ver. 7'nin altındaki bilgiler için 'Onaylanmadı' notu düş.
         4. HALÜSİNASYON ENGELİ: Prospektüste yazmayan hiçbir bilgiyi (internet yorumu, genel bilgi) teknik bilgi olarak sunma.
         5. DİL: Tamamen Türkçe, tıbbi terimler parantez içinde sadeleştirilmiş.
